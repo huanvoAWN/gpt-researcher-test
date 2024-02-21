@@ -4,6 +4,7 @@
 #Ignore Virtual Env
 env/
 .venv/
+venv/
 #Ignore generated outputs
 outputs/
 #Ignore pycache

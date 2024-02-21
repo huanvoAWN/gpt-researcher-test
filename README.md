@@ -19,6 +19,50 @@ The agent can produce detailed, factual and unbiased research reports, with cust
 
 **Our mission is to empower individuals and organizations with accurate, unbiased, and factual information by leveraging the power of AI.**
 
+## How to run the app on AWN `ai-lab` env
+- Request `rnd_tas` for access to **OpenAI API Key** and `ai-lab` environment
+- Set up `ai-lab` access following this [Guide](https://arcticwolf.atlassian.net/wiki/spaces/PD/pages/3715859793/OpenAI+Lab+Access). 
+- Obtain **Tavily API Key** from [Tavily AI](https://tavily.com/) (free for 1000 requests/month).
+- On your terminal, ssh to the `ai-lab` env
+```
+ssh ai-lab
+```
+- Create a folder to store your local repos
+```
+mkdir <first_name>_<last_name>
+cd <first_name>_<last_name>
+```
+- Clone the repo to your directory
+```
+git clone https://github.com/huanvoAWN/gpt-researcher-test.git
+cd gpt-researcher-test
+```
+- Create the python env 
+```
+python3.10 -m venv venv 
+source venv/bin/activate 
+pip install --upgrade pip 
+pip install -r requirements.txt
+```
+- Create a `.env` file 
+```
+touch .env
+```
+and place your `OpenAI API Key` and `Tavily API Key` inside 
+```
+OPENAI_API_KEY=<your OpenAI key>
+TAVILY_API_KEY=<your Tavily key>
+```
+- Within the [main.py](https://github.com/huanvoAWN/gpt-researcher-test/blob/22c27c399148d7851cd42b6e009b7c6c477128ea/main.py#L8) file, change the `host` to the `ai-lab` IP address, and the `port` to your preferred port, say `8010`.
+- Forward the port to your laptop
+```
+ssh -L <your preferred port>:<ai-lab IP address>:<your preferred port> rndtas-openai@ai-lab
+```
+- Launch the UI in your local browser (Chrome)
+```
+localhost:<your preferred port>
+```
+
 ## Why GPT Researcher?
 
 - To form objective conclusions for manual research tasks can take time, sometimes weeks to find the right resources and information.
