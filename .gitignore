@@ -5,6 +5,8 @@
 env/
 .venv/
 venv/
+awn-corp-ca-bundle.pem
+cert_AWN-Prisma-Root.pem
 #Ignore generated outputs
 outputs/
 #Ignore pycache

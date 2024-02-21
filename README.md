@@ -63,6 +63,18 @@ ssh -L <your preferred port>:<ai-lab IP address>:<your preferred port> rndtas-op
 localhost:<your preferred port>
 ```
 
+## How to run on local container (NOT working yet)
+- Obtain the `awn-corp-ca-bundle.pem` and `cert_AWN-Prisma-Root.pem` from this [Guide](https://arcticwolf.atlassian.net/wiki/spaces/ENTSECARCH/pages/3503751721/Tool+Configuration+for+SASE+TLS+Inspection) and put them in your repo. 
+- Update the `.env` file 
+```
+REQUESTS_CA_BUNDLE="awn-corp-ca-bundle.pem"
+CURL_CA_BUNDLE="awn-corp-ca-bundle.pem"
+SSL_CERT_FILE="awn-corp-ca-bundle.pem"
+NODE_EXTRA_CA_CERTS="awn-corp-ca-bundle.pem"
+OPENAI_API_KEY=<Your OpenAI Key>
+TAVILY_API_KEY=<Your Tavily Key>
+```
+
 ## Why GPT Researcher?
 
 - To form objective conclusions for manual research tasks can take time, sometimes weeks to find the right resources and information.

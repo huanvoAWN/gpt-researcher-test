@@ -19,6 +19,9 @@ RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
 COPY ./requirements.txt ./requirements.txt
+COPY cert_AWN-Prisma-Root.pem /usr/local/share/ca-certificates/cert_AWN-Prisma-Root.crt
+RUN update-ca-certificates
+COPY awn-corp-ca-bundle.pem /usr/src/app/awn-corp-ca-bundle.pem
 RUN pip install -r requirements.txt
 
 FROM gpt-researcher-install AS gpt-researcher

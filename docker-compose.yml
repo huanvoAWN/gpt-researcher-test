@@ -6,5 +6,10 @@ services:
     environment: 
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       TAVILY_API_KEY: ${TAVILY_API_KEY}
+      REQUESTS_CA_BUNDLE: ${REQUESTS_CA_BUNDLE}
+      CURL_CA_BUNDLE: ${CURL_CA_BUNDLE}
+      SSL_CERT_FILE: ${SSL_CERT_FILE}
     ports:
       - 8000:8000
+    volumes:
+      - ./awn-corp-ca-bundle.pem:/awn-corp-ca-bundle.pem
