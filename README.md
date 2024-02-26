@@ -1,6 +1,6 @@
 # 🔎 GPT Researcher
 
-This is a fork of the original [gpt-researcher](https://github.com/assafelovic/gpt-researcher) project. We added two features:
+This is a fork of the original [gpt-researcher](https://github.com/assafelovic/gpt-researcher) project specialized to the **cybersecurity** use case (the bot only does research for cybersecurity topics). We also added two features:
 - Ability to select an OpenAI model. 
 - Ability to add multiple queries/tasks. 
 
