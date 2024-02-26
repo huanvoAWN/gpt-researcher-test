@@ -37,6 +37,8 @@ class ContextCompressor:
                           for i, d in enumerate(docs) if i < top_n)
 
     def get_context(self, query, max_results=5):
+        if isinstance(query, list):
+            query = "\n\n".join(query)
         compressed_docs = self._get_contextual_retriever()
         relevant_docs = compressed_docs.get_relevant_documents(query)
         return self._pretty_print_docs(relevant_docs, max_results)

@@ -9,14 +9,22 @@ class GPTResearcher:
     """
     GPT Researcher
     """
-    def __init__(self, query, report_type="research_report", source_urls=None, config_path=None, websocket=None):
+    def __init__(self, query, report_type="research_report", source_urls=None, config_path=None, websocket=None, 
+                 auto_generate_agent=True, 
+                 max_search_results_per_query=-1,
+                 max_chunks_per_query=8,
+                 report_model = None):
         """
         Initialize the GPT Researcher class.
         Args:
-            query:
+            query (str|List[str]): could be a str or list of str 
             report_type:
             config_path:
             websocket:
+            auto_generate_agent (bool): whether to generate agent prompt automatically, default is True
+            max_search_results_per_query (int): if -1, will use the value in the config: 5
+            max_chunks_per_query (int): max number of document chunks per query, default is 8
+            report_model (str): the llm model to genereate the final report, if None, will use the smart model in the config
         """
         self.query = query
         self.agent = None
@@ -29,6 +37,12 @@ class GPTResearcher:
         self.source_urls = source_urls
         self.memory = Memory()
         self.visited_urls = set()
+        self.auto_generate_agent = auto_generate_agent
+        self.max_search_results_per_query = max_search_results_per_query
+        self.max_chunks_per_query = max_chunks_per_query
+        self.report_model = report_model 
+        if self.max_search_results_per_query == -1:
+            self.max_search_results_per_query = self.cfg.max_search_results_per_query
 
     async def run(self):
         """
@@ -38,7 +52,7 @@ class GPTResearcher:
         """
         print(f"🔎 Running research for '{self.query}'...")
         # Generate Agent
-        self.agent, self.role = await choose_agent(self.query, self.cfg)
+        self.agent, self.role = await choose_agent(self.query, self.cfg, self.auto_generate_agent)
         await stream_output("logs", self.agent, self.websocket)
 
         # If specified, the researcher will use the given urls as the context for the research.
@@ -53,7 +67,7 @@ class GPTResearcher:
         await stream_output("logs", f"✍️ Writing {self.report_type} for research task: {self.query}...", self.websocket)
         report = await generate_report(query=self.query, context=self.context,
                                        agent_role_prompt=self.role, report_type=self.report_type,
-                                       websocket=self.websocket, cfg=self.cfg)
+                                       websocket=self.websocket, cfg=self.cfg, model = self.report_model)
         time.sleep(2)
         return report
 
@@ -75,11 +89,14 @@ class GPTResearcher:
             context: List of context
         """
         context = []
-        # Generate Sub-Queries including original query
-        sub_queries = await get_sub_queries(query, self.role, self.cfg) + [query]
-        await stream_output("logs",
-                            f"🧠 I will conduct my research based on the following queries: {sub_queries}...",
-                            self.websocket)
+        if isinstance(self.query, list):
+            sub_queries = self.query
+        else:
+            # Generate Sub-Queries including original query
+            sub_queries = await get_sub_queries(query, self.role, self.cfg) + [query]
+            await stream_output("logs",
+                                f"🧠 I will conduct my research based on the following queries: {sub_queries}...",
+                                self.websocket)
 
         # Run Sub-Queries
         for sub_query in sub_queries:
@@ -89,7 +106,7 @@ class GPTResearcher:
             await stream_output("logs", f"📃 {content}", self.websocket)
             context.append(content)
 
-        return context
+        return "\n\n".join(context)
 
     async def get_new_urls(self, url_set_input):
         """ Gets the new urls from the given url set.
@@ -118,7 +135,7 @@ class GPTResearcher:
         """
         # Get Urls
         retriever = self.retriever(sub_query)
-        search_results = retriever.search(max_results=self.cfg.max_search_results_per_query)
+        search_results = retriever.search(max_results=self.max_search_results_per_query)
         new_search_urls = await self.get_new_urls([url.get("href") for url in search_results])
 
         # Scrape Urls
@@ -132,5 +149,5 @@ class GPTResearcher:
         # Summarize Raw Data
         context_compressor = ContextCompressor(documents=pages, embeddings=self.memory.get_embeddings())
         # Run Tasks
-        return context_compressor.get_context(query, max_results=8)
+        return context_compressor.get_context(query, max_results=self.max_chunks_per_query)
 

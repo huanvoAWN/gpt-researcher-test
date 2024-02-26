@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from fastapi import WebSocket
 from langchain.adapters import openai as lc_openai
-from colorama import Fore, Style
 from typing import Optional
 
 from gpt_researcher.master.prompts import auto_agent_instructions
@@ -87,7 +86,7 @@ async def stream_response(model, messages, temperature, max_tokens, llm_provider
                 if websocket is not None:
                     await websocket.send_json({"type": "report", "output": paragraph})
                 else:
-                    print(f"{Fore.GREEN}{paragraph}{Style.RESET_ALL}")
+                    print(paragraph)
                 paragraph = ""
     return response
 
@@ -115,6 +114,6 @@ def choose_agent(smart_llm_model: str, llm_provider: str, task: str) -> dict:
         print(f"Agent: {agent_dict.get('server')}")
         return agent_dict
     except Exception as e:
-        print(f"{Fore.RED}Error in choose_agent: {e}{Style.RESET_ALL}")
+        print(f"Error in choose_agent: {e}")
         return {"server": "Default Agent",
                 "agent_role_prompt": "You are an AI critical thinker research assistant. Your sole purpose is to write well written, critically acclaimed, objective and structured reports on given text."}

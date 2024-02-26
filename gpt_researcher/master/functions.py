@@ -48,30 +48,34 @@ def get_retriever(retriever):
     return retriever
 
 
-async def choose_agent(query, cfg):
+async def choose_agent(query, cfg, auto_generate_agent = True):
     """
     Chooses the agent automatically
     Args:
         query: original query
         cfg: Config
+        auto_generate_agent (bool): whether to generate agent prompt automatically, default is True
 
     Returns:
         agent: Agent name
         agent_role_prompt: Agent role prompt
     """
-    try:
-        response = await create_chat_completion(
-            model=cfg.smart_llm_model,
-            messages=[
-                {"role": "system", "content": f"{auto_agent_instructions()}"},
-                {"role": "user", "content": f"task: {query}"}],
-            temperature=0,
-            llm_provider=cfg.llm_provider
-        )
-        agent_dict = json.loads(response)
-        return agent_dict["server"], agent_dict["agent_role_prompt"]
-    except Exception as e:
-        return "Default Agent", "You are an AI critical thinker research assistant. Your sole purpose is to write well written, critically acclaimed, objective and structured reports on given text."
+    if auto_generate_agent:
+        try:
+            response = await create_chat_completion(
+                model=cfg.smart_llm_model,
+                messages=[
+                    {"role": "system", "content": f"{auto_agent_instructions()}"},
+                    {"role": "user", "content": f"task: {query}"}],
+                temperature=0,
+                llm_provider=cfg.llm_provider
+            )
+            agent_dict = json.loads(response)
+            return agent_dict["server"], agent_dict["agent_role_prompt"]
+        except Exception as e:
+            return "Default Agent", "You are an AI critical thinker research assistant. Your sole purpose is to write well written, critically acclaimed, objective and structured reports on given text."
+    else:
+        return "Cybersecurity Agent", cybersecurity_agent_prompt
 
 
 async def get_sub_queries(query, agent_role_prompt, cfg):
@@ -115,7 +119,7 @@ def scrape_urls(urls, cfg=None):
     try:
         content = Scraper(urls, user_agent).run()
     except Exception as e:
-        print(f"{Fore.RED}Error in scrape_urls: {e}{Style.RESET_ALL}")
+        print(f"Error in scrape_urls: {e}")
     return content
 
 
@@ -191,12 +195,12 @@ async def summarize_url(query, raw_data, agent_role_prompt, cfg):
             llm_provider=cfg.llm_provider
         )
     except Exception as e:
-        print(f"{Fore.RED}Error in summarize: {e}{Style.RESET_ALL}")
+        print(f"Error in summarize: {e}")
     return summary
 
 
 
-async def generate_report(query, context, agent_role_prompt, report_type, websocket, cfg):
+async def generate_report(query, context, agent_role_prompt, report_type, websocket, cfg, model = None):
     """
     generates the final report
     Args:
@@ -213,9 +217,13 @@ async def generate_report(query, context, agent_role_prompt, report_type, websoc
     """
     generate_prompt = get_report_by_type(report_type)
     report = ""
+    if not model:
+        model = cfg.smart_llm_model
+    if isinstance(query, list):
+        query = "\n\n".join(query)
     try:
         report = await create_chat_completion(
-            model=cfg.smart_llm_model,
+            model=model,
             messages=[
                 {"role": "system", "content": f"{agent_role_prompt}"},
                 {"role": "user", "content": f"{generate_prompt(query, context, cfg.report_format, cfg.total_words)}"}],
@@ -226,7 +234,7 @@ async def generate_report(query, context, agent_role_prompt, report_type, websoc
             max_tokens=cfg.smart_token_limit
         )
     except Exception as e:
-        print(f"{Fore.RED}Error in generate_report: {e}{Style.RESET_ALL}")
+        print(f"Error in generate_report: {e}")
 
     return report
 

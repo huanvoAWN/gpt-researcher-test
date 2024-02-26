@@ -21,7 +21,7 @@ def generate_report_prompt(question, context, report_format="apa", total_words=1
 
     return f'Information: """{context}"""\n\n' \
            f'Using the above information, answer the following' \
-           f' query or task: "{question}" in a detailed report --' \
+           f' queries or tasks: "{question}" in a detailed report --' \
            " The report should focus on the answer to the query, should be well structured, informative," \
            f" in depth and comprehensive, with facts and numbers if available and a minimum of {total_words} words.\n" \
            "You should strive to write the report as long as you can using all relevant and necessary information provided.\n" \
@@ -48,13 +48,14 @@ def generate_resource_report_prompt(question, context, report_format="apa", tota
         str: The resource report prompt for the given question and research summary.
     """
     return f'"""{context}"""\n\nBased on the above information, generate a bibliography recommendation report for the following' \
-           f' question or topic: "{question}". The report should provide a detailed analysis of each recommended resource,' \
+           f' questions or topics: "{question}". The report should provide a detailed analysis of each recommended resource,' \
            ' explaining how each source can contribute to finding answers to the research question.\n' \
            'Focus on the relevance, reliability, and significance of each source.\n' \
            'Ensure that the report is well-structured, informative, in-depth, and follows Markdown syntax.\n' \
            'Include relevant facts, figures, and numbers whenever available.\n' \
-           'The report should have a minimum length of 700 words.\n' \
-            'You MUST include all relevant source urls.'
+           f'The report should have at least {total_words} words.\n' \
+            'You MUST include all relevant source urls.\n' \
+            'Please do your best, this is very important to my career.'
 
 def generate_custom_report_prompt(query_prompt, context, report_format="apa", total_words=1000):
     return f'"{context}"\n\n{query_prompt}'
@@ -121,4 +122,12 @@ def generate_summary_prompt(query, data):
     return f'{data}\n Using the above text, summarize it based on the following task or query: "{query}".\n If the ' \
            f'query cannot be answered using the text, YOU MUST summarize the text in short.\n Include all factual ' \
            f'information such as numbers, stats, quotes, etc if available. '
+
+cybersecurity_agent_prompt="""You are a knowledgeable AI cybersecurity analyst. \
+Your primary objective is to analyze security vulnerabilities/campaigns and \
+generate comprehensive, accurate, and actionable security bulletins to inform \
+users about potential risks and provide mitigation strategies. \
+You are extremely careful in verifying facts, especially \
+when checking for numbers: software versions, CVE numbers, CVSS scores, etc.
+"""
 
