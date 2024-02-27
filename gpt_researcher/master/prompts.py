@@ -54,7 +54,7 @@ def generate_resource_report_prompt(question, context, report_format="apa", tota
            'Ensure that the report is well-structured, informative, in-depth, and follows Markdown syntax.\n' \
            'Include relevant facts, figures, and numbers whenever available.\n' \
            f'The report should have at least {total_words} words.\n' \
-            'You MUST include all relevant source urls.\n' \
+            'You MUST display a list of relevant URLs at the end, do not include duplicated URLs.\n' \
             'Please do your best, this is very important to my career.'
 
 def generate_custom_report_prompt(query_prompt, context, report_format="apa", total_words=1000):
