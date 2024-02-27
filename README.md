@@ -15,7 +15,8 @@ The agent can produce detailed, factual and unbiased research reports, with cust
 ## How to run the app on your laptop (M1 Mac)
 - Request `rnd_tas` for access to **OpenAI API Key** 
 - Obtain **Tavily API Key** from [Tavily AI](https://tavily.com/) (free for 1000 requests).
-- Install `python 3.10` on your Mac via MacPorts following this [Guide](https://arcticwolf.atlassian.net/wiki/spaces/PD/pages/3667199471/Tom+New+Laptop+RnD+Setup#Backend-Development). 
+- Install [MacPorts](https://www.macports.org/install.php) following this [Guide](https://arcticwolf.atlassian.net/wiki/spaces/PD/pages/3667199471/Tom+New+Laptop+RnD+Setup#Prerequisites). 
+- Install `python 3.10` on your Mac
 ```
 sudo port install python310 py310-pip
 ```
