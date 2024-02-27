@@ -16,6 +16,16 @@ The agent can produce detailed, factual and unbiased research reports, with cust
 - Request `rnd_tas` for access to **OpenAI API Key** 
 - Obtain **Tavily API Key** from [Tavily AI](https://tavily.com/) (free for 1000 requests).
 - Install `python 3.10` on your Mac via MacPorts following this [Guide](https://arcticwolf.atlassian.net/wiki/spaces/PD/pages/3667199471/Tom+New+Laptop+RnD+Setup#Backend-Development). 
+```
+sudo port install python310 py310-pip
+```
+- The following **optional** commands will set `python 3.10` as the default python environment
+```
+sudo port select --set python python310
+sudo port select --set python3 python310
+sudo port select --set pip pip310
+sudo port select --set pip3 pip310
+```
 - On your terminal, clone the repo to your local directory
 ```
 git clone https://github.com/huanvoAWN/gpt-researcher-test.git
@@ -32,14 +42,27 @@ source venv/bin/activate
 pip install --upgrade pip 
 pip install -r requirements.txt
 ```
+- If you encounter a `401 Error, Credentials not correct`, then run the following commands in the terminal
+```
+CODEARTIFACT_DOMAIN='infra-ark-target'
+CODEARTIFACT_DOMAIN_OWNER=199883727417
+CODEARTIFACT_REPOSITORY="infra-ark-target-prod"
+
+aws codeartifact login --tool pip --region us-west-2 --domain ${CODEARTIFACT_DOMAIN} --domain-owner ${CODEARTIFACT_DOMAIN_OWNER} --repository ${CODEARTIFACT_REPOSITORY}
+```
+- Obtain the `awn-corp-ca-bundle.pem` from [Here](https://arcticwolf.egnyte.com/fl/JWQWMURrsc) (see also this [Guide](https://arcticwolf.atlassian.net/wiki/spaces/ENTSECARCH/pages/3503751721/Tool+Configuration+for+SASE+TLS+Inspection#Prisma-Access-CA-Certificate)) and **put** it in your `gpt-researcher-test` repo. 
 - Create a `.env` file 
 ```
 touch .env
 ```
-and place your `OpenAI API Key` and `Tavily API Key` inside 
+and place your `OpenAI API Key` and `Tavily API Key` and the CA certificates inside 
 ```
 OPENAI_API_KEY=<your OpenAI key>
 TAVILY_API_KEY=<your Tavily key>
+REQUESTS_CA_BUNDLE="awn-corp-ca-bundle.pem"
+CURL_CA_BUNDLE="awn-corp-ca-bundle.pem"
+SSL_CERT_FILE="awn-corp-ca-bundle.pem"
+NODE_EXTRA_CA_CERTS="awn-corp-ca-bundle.pem"
 ```
 - Run the streamlit app on your preferred port (default is 8501)
 ```

@@ -5,6 +5,8 @@
 env/
 .venv/
 venv/
+# Ignore certificates
+awn-corp-ca-bundle.pem
 #Ignore generated outputs
 outputs/
 #Ignore pycache
